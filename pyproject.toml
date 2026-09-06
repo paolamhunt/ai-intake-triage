@@ -1,0 +1,9 @@
+[project]
+name = "ai-intake-triage"
+version = "0.1.0"
+description = "AI-assisted intake and triage for unstructured service inquiries."
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = []
