@@ -1,33 +1,11 @@
 """Validated models for business-specific intake configuration."""
 
-from typing import Annotated, Self
+from typing import Self
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    StringConstraints,
-    model_validator,
-)
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from ai_intake_triage.domain.enums import ServiceMatchLevel
-
-Identifier = Annotated[
-    str,
-    StringConstraints(
-        strip_whitespace=True,
-        min_length=1,
-        max_length=64,
-        pattern=r"^[a-z][a-z0-9_]*$",
-    ),
-]
-NonEmptyText = Annotated[
-    str,
-    StringConstraints(
-        strip_whitespace=True,
-        min_length=1,
-    ),
-]
+from ai_intake_triage.domain.types import NonEmptyText, StableIdentifier
 
 
 def find_duplicates(values: list[str]) -> set[str]:
@@ -64,7 +42,7 @@ class BusinessProfile(ConfigurationModel):
 class IntakeFieldConfig(ConfigurationModel):
     """Reusable information that may be needed to understand an inquiry."""
 
-    id: Identifier
+    id: StableIdentifier
     description: str = Field(min_length=1, max_length=500)
     default_question: str = Field(min_length=1, max_length=500)
 
@@ -72,12 +50,12 @@ class IntakeFieldConfig(ConfigurationModel):
 class ServiceConfig(ConfigurationModel):
     """One service offered by the configured business."""
 
-    id: Identifier
+    id: StableIdentifier
     name: str = Field(min_length=1, max_length=200)
     description: str = Field(min_length=1, max_length=2_000)
     typical_capabilities: list[NonEmptyText] = Field(min_length=1)
-    required_information: list[Identifier] = Field(min_length=1)
-    optional_information: list[Identifier] = Field(default_factory=list)
+    required_information: list[StableIdentifier] = Field(min_length=1)
+    optional_information: list[StableIdentifier] = Field(default_factory=list)
     base_complexity_points: int = Field(ge=0, le=10)
 
     @model_validator(mode="after")
@@ -108,7 +86,7 @@ class ServiceConfig(ConfigurationModel):
 class ComplexityFactorConfig(ConfigurationModel):
     """A configured factor contributing to preliminary complexity."""
 
-    id: Identifier
+    id: StableIdentifier
     description: str = Field(min_length=1, max_length=500)
     points: int = Field(ge=1, le=10)
 
