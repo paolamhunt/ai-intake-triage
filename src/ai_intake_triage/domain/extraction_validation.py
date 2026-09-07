@@ -282,3 +282,27 @@ def validate_extraction_duplicates(
         extraction=extraction.model_copy(update=updates),
         validation_issues=validation_issues,
     )
+
+
+def validate_extraction(
+    extraction: AIExtraction,
+    *,
+    inquiry_text: str,
+    business_config: BusinessConfig,
+) -> ExtractionValidationResult:
+    """Run all deterministic extraction validators in their required order."""
+    evidence_result = validate_extraction_evidence(extraction, inquiry_text)
+    reference_result = validate_extraction_references(
+        evidence_result.extraction,
+        business_config,
+    )
+    duplicate_result = validate_extraction_duplicates(reference_result.extraction)
+
+    return ExtractionValidationResult(
+        extraction=duplicate_result.extraction,
+        validation_issues=[
+            *evidence_result.validation_issues,
+            *reference_result.validation_issues,
+            *duplicate_result.validation_issues,
+        ],
+    )
