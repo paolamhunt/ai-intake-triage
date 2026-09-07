@@ -6,7 +6,10 @@ from typing import Protocol
 
 from ai_intake_triage.configuration.business import BusinessConfig
 from ai_intake_triage.domain.enums import ValidationIssueCode
-from ai_intake_triage.domain.evidence import evidence_is_traceable
+from ai_intake_triage.domain.evidence import (
+    evidence_is_traceable,
+    normalize_evidence_text,
+)
 from ai_intake_triage.domain.extraction import AIExtraction
 from ai_intake_triage.domain.triage import ValidationIssue
 
@@ -170,6 +173,107 @@ def validate_extraction_references(
             supported_ids=supported_ids,
             item_type=item_type,
             reference_for=reference_for,
+        )
+        updates[field_name] = accepted
+        validation_issues.extend(issues)
+
+    return ExtractionValidationResult(
+        extraction=extraction.model_copy(update=updates),
+        validation_issues=validation_issues,
+    )
+
+
+def _remove_duplicate_items[DuplicateItem](
+    items: Sequence[DuplicateItem],
+    *,
+    item_type: str,
+    identity_for: Callable[[DuplicateItem], str],
+) -> tuple[list[DuplicateItem], list[ValidationIssue]]:
+    """Keep the first item for each deterministic identity."""
+    accepted: list[DuplicateItem] = []
+    issues: list[ValidationIssue] = []
+    seen: set[str] = set()
+
+    for item in items:
+        identity = identity_for(item)
+        if identity not in seen:
+            seen.add(identity)
+            accepted.append(item)
+            continue
+
+        issues.append(
+            ValidationIssue(
+                code=ValidationIssueCode.DUPLICATE_ITEM,
+                item_type=item_type,
+                item_reference=identity,
+                message=f"A later item duplicates an earlier candidate: {identity!r}",
+            )
+        )
+
+    return accepted, issues
+
+
+def validate_extraction_duplicates(
+    extraction: AIExtraction,
+) -> ExtractionValidationResult:
+    """Remove exact normalized duplicates within one extraction."""
+    normalized = normalize_evidence_text
+    collections = (
+        (
+            "stated_requirements",
+            "stated_requirement",
+            lambda item: normalized(item.statement),
+        ),
+        (
+            "mentioned_systems",
+            "mentioned_system",
+            lambda item: normalized(item.name),
+        ),
+        (
+            "intake_field_findings",
+            "intake_field_finding",
+            lambda item: item.field_id,
+        ),
+        (
+            "inferred_capabilities",
+            "inferred_capability",
+            lambda item: normalized(item.capability),
+        ),
+        (
+            "service_candidates",
+            "service_candidate",
+            lambda item: item.service_id,
+        ),
+        (
+            "complexity_factors",
+            "complexity_factor",
+            lambda item: item.factor_id,
+        ),
+        (
+            "ambiguities",
+            "ambiguity",
+            lambda item: normalized(item.description),
+        ),
+        (
+            "contradictions",
+            "contradiction",
+            lambda item: normalized(item.description),
+        ),
+        (
+            "draft_questions",
+            "draft_clarifying_question",
+            lambda item: item.field_id,
+        ),
+    )
+
+    updates: dict[str, object] = {}
+    validation_issues: list[ValidationIssue] = []
+
+    for field_name, item_type, identity_for in collections:
+        accepted, issues = _remove_duplicate_items(
+            getattr(extraction, field_name),
+            item_type=item_type,
+            identity_for=identity_for,
         )
         updates[field_name] = accepted
         validation_issues.extend(issues)
