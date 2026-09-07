@@ -1,5 +1,6 @@
 """Typed application settings loaded from the environment."""
 
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, SecretStr
@@ -19,6 +20,7 @@ class AppSettings(BaseSettings):
 
     environment: Literal["development", "test", "production"] = "development"
     operator_api_key: SecretStr = Field(min_length=32)
+    business_config_path: Path = Path("configs/the_distracted_developer.yaml")
 
     @property
     def documentation_enabled(self) -> bool:

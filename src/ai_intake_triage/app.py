@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI
 
+from ai_intake_triage.configuration.loader import load_business_config
 from ai_intake_triage.configuration.settings import AppSettings
 
 
@@ -10,6 +11,7 @@ def create_app(settings: AppSettings) -> FastAPI:
     documentation_url = "/docs" if settings.documentation_enabled else None
     redoc_url = "/redoc" if settings.documentation_enabled else None
     openapi_url = "/openapi.json" if settings.documentation_enabled else None
+    business_config = load_business_config(settings.business_config_path)
 
     app = FastAPI(
         title="AI Intake Triage",
@@ -18,6 +20,8 @@ def create_app(settings: AppSettings) -> FastAPI:
         redoc_url=redoc_url,
         openapi_url=openapi_url,
     )
+
+    app.state.business_config = business_config
 
     @app.get("/health", tags=["health"])
     def health_check() -> dict[str, str]:

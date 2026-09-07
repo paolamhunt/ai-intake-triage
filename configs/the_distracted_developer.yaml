@@ -1,0 +1,264 @@
+version: "1.0.0"
+
+business:
+  name: The Distracted Developer
+  description: >
+    Practical software, data, automation, and AI-assisted systems designed
+    around real business workflows.
+
+intake_fields:
+  - id: business_goal
+    description: The business outcome the client wants to achieve.
+    default_question: What business outcome are you hoping to achieve?
+
+  - id: current_process
+    description: The steps currently used to complete the work.
+    default_question: Can you walk me through the current process from start to finish?
+
+  - id: current_systems
+    description: The applications or systems currently involved.
+    default_question: Which systems or applications are involved today?
+
+  - id: desired_outcome
+    description: The expected behavior or result of the proposed solution.
+    default_question: What would you like the finished solution to do?
+
+  - id: volume_frequency
+    description: The amount of work processed and how often it occurs.
+    default_question: Approximately how many items are processed, and how often?
+
+  - id: data_characteristics
+    description: The formats, structure, and sensitivity of relevant data.
+    default_question: What data formats are involved, and does the data contain sensitive information?
+
+  - id: integration_access
+    description: Available APIs, credentials, permissions, or system access.
+    default_question: What integration or API access is currently available?
+
+  - id: users
+    description: The people or roles that will use or depend on the solution.
+    default_question: Who will use the solution, and what roles do they have?
+
+  - id: core_workflows
+    description: The primary workflows the application must support.
+    default_question: Which workflows must the application support in its first version?
+
+  - id: example_inputs_outputs
+    description: Representative inputs and the outputs expected from them.
+    default_question: Can you provide examples of typical inputs and the expected outputs?
+
+  - id: human_review_requirements
+    description: Decisions or outputs that require human review or approval.
+    default_question: Which decisions or outputs must be reviewed by a person?
+
+  - id: timeline
+    description: Important delivery dates or scheduling constraints.
+    default_question: Is there a target date or scheduling constraint?
+
+  - id: technical_constraints
+    description: Required platforms, restrictions, or existing technical decisions.
+    default_question: Are there technical requirements or restrictions the solution must follow?
+
+  - id: success_criteria
+    description: Observable conditions that would make the project successful.
+    default_question: How will you determine whether the solution is successful?
+
+  - id: security_requirements
+    description: Privacy, security, compliance, or retention requirements.
+    default_question: Are there privacy, security, compliance, or data-retention requirements?
+
+services:
+  - id: workflow_automation
+    name: Workflow Automation
+    description: >
+      Automation of repetitive business processes, handoffs, document flows,
+      and work performed across multiple systems.
+    typical_capabilities:
+      - workflow mapping
+      - task automation
+      - document ingestion
+      - data validation
+      - system synchronization
+      - human approval steps
+    required_information:
+      - current_process
+      - current_systems
+      - desired_outcome
+      - volume_frequency
+    optional_information:
+      - business_goal
+      - data_characteristics
+      - integration_access
+      - human_review_requirements
+      - timeline
+      - technical_constraints
+      - success_criteria
+      - security_requirements
+    base_complexity_points: 1
+
+  - id: ai_assisted_systems
+    name: AI-Assisted Systems
+    description: >
+      Practical AI-assisted extraction, classification, decision-support,
+      and human-in-the-loop workflows.
+    typical_capabilities:
+      - structured information extraction
+      - text classification
+      - summarization
+      - missing-information detection
+      - model abstraction
+      - human-in-the-loop review
+    required_information:
+      - business_goal
+      - desired_outcome
+      - example_inputs_outputs
+      - human_review_requirements
+    optional_information:
+      - current_process
+      - current_systems
+      - volume_frequency
+      - data_characteristics
+      - timeline
+      - technical_constraints
+      - success_criteria
+      - security_requirements
+    base_complexity_points: 2
+
+  - id: api_system_integration
+    name: API and System Integration
+    description: >
+      Connections between applications, APIs, and data stores that exchange
+      validated information reliably.
+    typical_capabilities:
+      - API design
+      - third-party API integration
+      - authentication handling
+      - data mapping
+      - synchronization
+      - integration error handling
+    required_information:
+      - current_systems
+      - desired_outcome
+      - integration_access
+      - volume_frequency
+    optional_information:
+      - current_process
+      - data_characteristics
+      - timeline
+      - technical_constraints
+      - success_criteria
+      - security_requirements
+    base_complexity_points: 2
+
+  - id: data_engineering
+    name: Data Engineering
+    description: >
+      Reliable movement, transformation, validation, and modeling of data
+      for operational or analytical use.
+    typical_capabilities:
+      - data ingestion
+      - transformation pipelines
+      - schema design
+      - data-quality validation
+      - database integration
+      - scheduled processing
+    required_information:
+      - current_systems
+      - desired_outcome
+      - data_characteristics
+      - volume_frequency
+    optional_information:
+      - current_process
+      - integration_access
+      - timeline
+      - technical_constraints
+      - success_criteria
+      - security_requirements
+    base_complexity_points: 2
+
+  - id: custom_application_development
+    name: Custom Application Development
+    description: >
+      Focused backend services and web applications built around a defined
+      business workflow.
+    typical_capabilities:
+      - backend development
+      - REST API development
+      - web application development
+      - domain modeling
+      - validation
+      - application testing
+    required_information:
+      - business_goal
+      - desired_outcome
+      - users
+      - core_workflows
+    optional_information:
+      - current_systems
+      - volume_frequency
+      - data_characteristics
+      - integration_access
+      - timeline
+      - technical_constraints
+      - success_criteria
+      - security_requirements
+    base_complexity_points: 3
+
+supported_technologies:
+  - Python
+  - FastAPI
+  - REST APIs
+  - SQL
+  - PostgreSQL
+  - SQLite
+  - AWS
+  - TypeScript
+  - React
+  - Next.js
+
+complexity:
+  factors:
+    - id: multiple_external_systems
+      description: Three or more external systems must coordinate.
+      points: 2
+
+    - id: unstructured_documents
+      description: Inputs require interpretation or extraction from unstructured documents.
+      points: 2
+
+    - id: sensitive_or_regulated_data
+      description: The solution processes sensitive, regulated, or financial data.
+      points: 2
+
+    - id: high_processing_volume
+      description: Processing volume materially affects architecture or operations.
+      points: 2
+
+    - id: limited_integration_access
+      description: A required system has limited or uncertain integration access.
+      points: 2
+
+    - id: real_time_processing
+      description: The solution requires real-time or near-real-time processing.
+      points: 3
+
+    - id: multiple_user_roles
+      description: The solution requires behavior or permissions for multiple user roles.
+      points: 1
+
+    - id: human_approval_workflow
+      description: The solution requires one or more human approval stages.
+      points: 1
+
+    - id: legacy_system
+      description: A required legacy system creates compatibility or access constraints.
+      points: 2
+
+  thresholds:
+    low_max: 3
+    medium_max: 8
+
+routing:
+  discovery_match_levels:
+    - strong
+    - possible

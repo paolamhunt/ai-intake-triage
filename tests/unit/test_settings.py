@@ -1,5 +1,7 @@
 """Unit tests for application settings."""
 
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
 
@@ -52,3 +54,32 @@ def test_operator_api_key_is_masked() -> None:
     )
 
     assert str(settings.operator_api_key) == "**********"
+
+
+def test_default_business_configuration_path() -> None:
+    """Settings use the example business configuration by default."""
+    settings = AppSettings(
+        operator_api_key=VALID_API_KEY,
+        _env_file=None,
+    )
+
+    assert settings.business_config_path == Path(
+        "configs/the_distracted_developer.yaml"
+    )
+
+
+def test_business_configuration_path_can_be_overridden(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A deployment can select another trusted configuration file."""
+    monkeypatch.setenv(
+        "AIT_BUSINESS_CONFIG_PATH",
+        "configs/another_business.yaml",
+    )
+
+    settings = AppSettings(
+        operator_api_key=VALID_API_KEY,
+        _env_file=None,
+    )
+
+    assert settings.business_config_path == Path("configs/another_business.yaml")
