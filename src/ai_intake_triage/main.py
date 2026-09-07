@@ -1,14 +1,6 @@
 """FastAPI application entry point."""
 
-from fastapi import FastAPI
+from ai_intake_triage.app import create_app
+from ai_intake_triage.configuration.settings import AppSettings
 
-app = FastAPI(
-    title="AI Intake Triage",
-    version="0.1.0",
-)
-
-
-@app.get("/health", tags=["health"])
-def health_check() -> dict[str, str]:
-    """Report whether the application is running."""
-    return {"status": "ok"}
+app = create_app(AppSettings())
